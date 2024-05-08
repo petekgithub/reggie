@@ -1,4 +1,4 @@
-# Act Regtech Assignment
+# Act Regtech
 
 ## Overview
 
@@ -28,3 +28,7 @@
 - **API Endpoint**: [Reggie's Chat API](https://regai-app-mock-1483.azurewebsites.net/chat?user_input=hello)
 - **Parameter**: Use the `user_input` parameter to send messages to the API.
 - **Error Handling**: Implement fallback mechanisms for handling API failures or unavailability.
+
+### Test
+
+### Deploy (Vercel) - Demo
