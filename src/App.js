@@ -4,67 +4,115 @@ import "./App.css";
 function App() {
   const [messages, setMessages] = useState([
     {
-      content: "It's over greenhead.",
+      content: "Hey there. Reggie is here.",
       role: "assistant",
     },
     {
-      content: "You underestimate my power!",
+      content: "Let's begin.",
       role: "user",
     },
   ]);
 
-  const [isTyping, setIsTyping] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userInput = e.target.elements[0].value; // Get the value of the first input element
+
+    if (!userInput.trim()) return; // Prevent empty inputs
+
+    e.target.reset(); // Immediately clear the input field after the message is sent
+
+    const userMessage = {
+      content: `${userInput}`,
+      role: "user",
+    };
+
+    setMessages((messages) => [...messages, userMessage]);
+    setIsTyping(true);
+
+    try {
+      const response = await fetch(
+        `https://regai-app-mock-1483.azurewebsites.net/chat?user_input=${encodeURIComponent(
+          userInput
+        )}`
+      );
+      const text = await response.text();
+
+      const botResponseText = text.split("I say:")[1].trim();
+      const botResponse = {
+        content: [`You say: ${userInput}`, `I say: ${botResponseText}`],
+        role: "assistant",
+      };
+
+      setMessages((messages) => [...messages, botResponse]);
+    } catch (error) {
+      console.error("Fetching error:", error);
+      setMessages((messages) => [
+        ...messages,
+        { content: "Error fetching response.", role: "assistant" },
+      ]);
+    }
+
+    setIsTyping(false);
   };
 
   return (
     <section className="container mx-auto p-5 fixed inset-0">
       <div className="mockup-window border bg-base-300 w-full h-full flex flex-col">
         <div className="p-5 pb-8 flex-grow overflow-auto">
-          {messages.length &&
-            messages.map((msg, i) => {
-              return (
-                <div
-                  className={`chat ${
-                    msg.role === "assistant" ? "chat-start" : "chat-end"
-                  }`}
-                  key={"chatKey" + i}
-                >
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <img
-                        alt="avatars"
-                        src={
-                          msg.role === "assistant"
-                            ? "/images/assistant.png"
-                            : "/images/user.png"
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="chat-bubble">{msg.content}</div>
+          {messages.map((msg, index) => (
+            <div
+              className={`chat ${
+                msg.role === "assistant" ? "chat-start" : "chat-end"
+              }`}
+              key={index}
+            >
+              <div className="chat-image avatar">
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="avatar"
+                    src={
+                      msg.role === "assistant"
+                        ? "/images/assistant.png"
+                        : "/images/user.png"
+                    }
+                  />
                 </div>
-              );
-            })}
+              </div>
+              <div className="chat-bubble">
+                {Array.isArray(msg.content) ? (
+                  msg.content.map((line, idx) => (
+                    <p
+                      key={idx}
+                      style={{
+                        marginBottom:
+                          idx < msg.content.length - 1 ? "10px" : "0",
+                      }}
+                    >
+                      {line}
+                    </p>
+                  ))
+                ) : (
+                  <p>{msg.content}</p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <form
-          className="form-control m-5 items-center"
-          onSubmit={(e) => handleSubmit(e)}
-        >
+        <form className="form-control m-5 items-center" onSubmit={handleSubmit}>
           <div className="input-group max-w-full w-[800px] relative">
             {isTyping && (
               <small className="absolute -top-5 left-0.5 animate-pulse">
-                Jarvis is Typing...
+                Reggie is Typing...
               </small>
             )}
 
             <div className="flex items-center">
               <input
                 type="text"
-                placeholder="Type a question for ChatGPT, ask anything!"
+                placeholder="Type a question for Reggie, ask anything!"
                 className="input input-bordered flex-grow custom-input"
                 required
               />
