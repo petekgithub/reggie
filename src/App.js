@@ -38,7 +38,7 @@ function App() {
     try {
       const botResponseText = await fetchBotResponse(userInput);
       const botResponse = {
-        content: `I say: ${botResponseText}`,
+        content: [`You say: ${userInput}`, `I say: ${botResponseText}`],
         role: "assistant",
       };
 
