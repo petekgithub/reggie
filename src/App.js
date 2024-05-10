@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./App.css";
 import MessageList from "./components/MessageList";
 import MessageForm from "./components/MessageForm";
 import { fetchBotResponse } from "./services/api";
